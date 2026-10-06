@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yerra Paul Raj | Azure DevOps Engineer | AZ-104 Certified</title>
+  
+  <!-- Typography: Space Grotesk, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for Cloud & DevOps icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js for 3D Topology Visualization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            deepNavy: '#030712',
+            azureDark: '#081026',
+            azureSurface: 'rgba(11, 20, 42, 0.75)',
+            azureBlue: '#0078D4',
+            azureCyan: '#00D2FF',
+            terminalEmerald: '#10B981',
+            neonViolet: '#8B5CF6',
+            infraAmber: '#F59E0B',
+            alertRed: '#EF4444'
+          },
+          fontFamily: {
+            heading: ['"Space Grotesk"', 'sans-serif'],
+            sans: ['"Inter"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          animation: {
+            'glow-pulse': 'glowPulse 3s ease-in-out infinite',
+            'float-slow': 'floatSlow 7s ease-in-out infinite',
+            'scanline': 'scanline 6s linear infinite',
+            'radar': 'radar 4s linear infinite',
+          },
+          keyframes: {
+            glowPulse: {
+              '0%, 100%': { opacity: '0.35', filter: 'blur(24px)' },
+              '50%': { opacity: '0.75', filter: 'blur(34px)' },
+            },
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            scanline: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(1000%)' },
+            },
+            radar: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #030712;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0078D4;
+    }
+
+    /* Glass Panels */
+    .glass-panel {
+      background: rgba(11, 20, 42, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 120, 212, 0.22);
+      box-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.65);
+    }
+    .glass-panel:hover {
+      border-color: rgba(0, 210, 255, 0.45);
+    }
+
+    /* Terminal Prompt Caret */
+    .cli-caret {
+      display: inline-block;
+      width: 8px;
+      height: 1.15em;
+      background-color: #00D2FF;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Cyber Grid */
+    .azure-grid {
+      background-size: 45px 45px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 120, 212, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 120, 212, 0.05) 1px, transparent 1px);
+    }
+
+    /* Ambient Spotlight */
+    #cursor-light {
+      pointer-events: none;
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 210, 255, 0.07) 0%, rgba(0, 120, 212, 0.03) 40%, transparent 70%);
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      transition: width 0.3s ease, height 0.3s ease;
+      will-change: transform;
+    }
+
+    /* Code Block styling */
+    pre, code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+
+<body class="bg-deepNavy text-slate-200 font-sans selection:bg-azureCyan selection:text-black overflow-x-hidden min-h-screen relative azure-grid">
+
+  <!-- Interactive Three.js Azure Network Mesh Canvas -->
+  <canvas id="cloud-mesh-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-60"></canvas>
+  <div id="cursor-light" class="hidden md:block"></div>
+
+  <!-- Audio Synthesizer Toggle & Global Telemetry Dock -->
+  <div class="fixed bottom-6 right-6 z-50 flex items-center space-x-2 bg-azureDark/90 border border-azureBlue/40 backdrop-blur-md px-3.5 py-2 rounded-full shadow-2xl">
+    <button id="sfx-toggle" class="text-xs px-2.5 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-all flex items-center gap-1.5 focus:outline-none" title="Toggle Synthesizer Audio Effects">
+      <i class="fa-solid fa-volume-xmark text-slate-400" id="sfx-icon"></i>
+      <span class="text-[11px] font-mono" id="sfx-status">SFX: OFF</span>
+    </button>
+    <a href="#contact" class="text-xs px-3.5 py-1.5 rounded-full bg-gradient-to-r from-azureBlue to-azureCyan text-white font-semibold hover:shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all flex items-center gap-1.5">
+      <i class="fa-regular fa-paper-plane text-xs"></i> <span>Hire Paul</span>
+    </a>
+  </div>
+
+  <header class="fixed top-0 left-0 right-0 z-40 bg-deepNavy/80 backdrop-blur-xl border-b border-azureBlue/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand & Security Identifier -->
+      <a href="#" class="flex items-center space-x-3 group" onclick="playAudio('telemetry')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-azureBlue via-azureCyan to-neonViolet p-[1px] group-hover:scale-105 transition-transform duration-300">
+          <div class="w-full h-full bg-deepNavy rounded-[11px] flex items-center justify-center">
+            <span class="font-mono font-bold text-azureCyan text-base group-hover:text-white transition-colors">PR</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="font-heading font-bold text-lg text-white tracking-wide">Yerra Paul Raj</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-azureBlue/20 text-azureCyan border border-azureBlue/40 font-semibold">AZ-104</span>
+          </div>
+          <span class="text-xs text-slate-400 font-mono tracking-tight flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-terminalEmerald animate-pulse"></span>
+            Azure DevOps & Cloud IaC Engineer
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <a href="#about" class="text-slate-300 hover:text-azureCyan transition-colors" onclick="playAudio('click')">Overview</a>
+        <a href="#architecture" class="text-slate-300 hover:text-azureCyan transition-colors" onclick="playAudio('click')">Architecture (IaC)</a>
+        <a href="#pipeline" class="text-slate-300 hover:text-azureCyan transition-colors" onclick="playAudio('click')">CI/CD Pipeline</a>
+        <a href="#incident-simulator" class="text-slate-300 hover:text-azureCyan transition-colors" onclick="playAudio('click')">RCA Debugger</a>
+        <a href="#skills" class="text-slate-300 hover:text-azureCyan transition-colors" onclick="playAudio('click')">Skills & Terminal</a>
+        <a href="#experience" class="text-slate-300 hover:text-azureCyan transition-colors" onclick="playAudio('click')">Experience</a>
+      </nav>
+
+      <!-- Quick Action CTAs -->
+      <div class="hidden lg:flex items-center space-x-3">
+        <a href="https://linkedin.com/in/paulrajyerra" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-azureCyan hover:border-azureCyan/50 transition-all" title="LinkedIn Profile">
+          <i class="fa-brands fa-linkedin-in text-sm"></i>
+        </a>
+        <a href="mailto:paulrajyerra@gmail.com" class="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-azureCyan hover:border-azureCyan/50 transition-all" title="Email Paul">
+          <i class="fa-regular fa-envelope text-sm"></i>
+        </a>
+        <a href="#contact" class="px-4 py-2 rounded-xl text-xs font-semibold border border-azureCyan/50 bg-azureCyan/10 text-azureCyan hover:bg-azureCyan hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(0,210,255,0.15)] flex items-center gap-1.5">
+          <i class="fa-solid fa-cloud-bolt text-xs"></i>
+          <span>Let's Talk Cloud</span>
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-white/5 text-slate-300 hover:text-azureCyan">
+        <i class="fa-solid fa-bars text-xl" id="menu-icon"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-6 bg-deepNavy/95 border-b border-azureBlue/20">
+      <div class="flex flex-col space-y-3 font-medium text-sm">
+        <a href="#about" class="py-2 text-slate-300 hover:text-azureCyan mobile-link">Overview</a>
+        <a href="#architecture" class="py-2 text-slate-300 hover:text-azureCyan mobile-link">3-Tier IaC Architecture</a>
+        <a href="#pipeline" class="py-2 text-slate-300 hover:text-azureCyan mobile-link">CI/CD Pipeline Simulator</a>
+        <a href="#incident-simulator" class="py-2 text-slate-300 hover:text-azureCyan mobile-link">Production RCA Debugger</a>
+        <a href="#skills" class="py-2 text-slate-300 hover:text-azureCyan mobile-link">Skills & Shell</a>
+        <a href="#experience" class="py-2 text-slate-300 hover:text-azureCyan mobile-link">Experience</a>
+        <a href="#contact" class="py-2 text-azureCyan font-bold mobile-link">Contact & Recruiter Brief</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="about" class="relative pt-36 pb-20 md:pt-44 md:pb-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      
+      <!-- Hero Left: Mission Statement & Key Highlights -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Live System Metric Pill -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-azureBlue/15 border border-azureCyan/40 text-azureCyan text-xs font-mono tracking-wide">
+          <span class="w-2 h-2 rounded-full bg-terminalEmerald animate-ping"></span>
+          <span class="font-bold">STATUS:</span> READY TO DEPLOY · HYDERABAD / REMOTE
+        </div>
+
+        <div class="space-y-3">
+          <h2 class="text-xs sm:text-sm font-mono tracking-widest text-slate-400 uppercase">
+            // INFRASTRUCTURE AS CODE · AZURE DEVOPS · PRODUCTION RELIABILITY
+          </h2>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-heading text-white tracking-tight leading-tight">
+            Architecting <span class="bg-gradient-to-r from-white via-azureCyan to-azureBlue bg-clip-text text-transparent">Zero-Downtime</span> Cloud Infrastructure.
+          </h1>
+          <p class="text-lg sm:text-xl font-heading text-slate-300 font-medium">
+            <span class="text-azureCyan">Yerra Paul Raj</span> — Microsoft Certified: Azure Administrator Associate (AZ-104)
+          </p>
+        </div>
+
+        <p class="text-slate-400 text-base sm:text-lg leading-relaxed max-w-2xl font-light">
+          Azure DevOps Engineer with <strong class="text-white font-medium">2.5+ years of high-stakes technical support</strong> and hands-on expertise building <strong class="text-white font-medium">Terraform-provisioned 3-tier cloud architectures</strong>. Battle-tested in production environments diagnosing complex API, DNS, and HTTP/HAR pipeline bottlenecks with systematic Root Cause Analysis.
+        </p>
+
+        <!-- Credentials Pills -->
+        <div class="flex flex-wrap gap-2.5 text-xs font-mono text-slate-300 pt-1">
+          <div class="px-3 py-1.5 rounded-lg bg-azureBlue/10 border border-azureBlue/30 flex items-center gap-2">
+            <i class="fa-brands fa-microsoft text-azureBlue"></i>
+            <span class="text-white font-semibold">AZ-104 Certified</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
+            <i class="fa-solid fa-cubes text-neonViolet"></i>
+            <span>Modular Terraform IaC</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
+            <i class="fa-solid fa-code-branch text-azureCyan"></i>
+            <span>YAML Azure Pipelines</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
+            <i class="fa-solid fa-stethoscope text-terminalEmerald"></i>
+            <span>Log, DNS & HAR Diagnostics</span>
+          </div>
+        </div>
+
+        <!-- Hero Actions -->
+        <div class="flex flex-wrap items-center gap-4 pt-4">
+          <a href="#pipeline" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-azureBlue to-azureCyan text-black font-bold tracking-wide hover:shadow-[0_0_25px_rgba(0,210,255,0.4)] transition-all flex items-center gap-2 group" onclick="playAudio('deploy')">
+            <i class="fa-solid fa-play text-xs text-black"></i>
+            <span>Launch Pipeline Simulator</span>
+          </a>
+          <a href="#architecture" class="px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-azureCyan/40 text-slate-200 hover:text-white transition-all flex items-center gap-2" onclick="playAudio('click')">
+            <i class="fa-solid fa-network-wired text-azureCyan text-xs"></i>
+            <span>Inspect 3-Tier Terraform</span>
+          </a>
+          <button id="copy-email-btn" class="px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-terminalEmerald/40 text-slate-300 hover:text-terminalEmerald transition-all flex items-center gap-2 text-sm" title="Copy Email to Clipboard">
+            <i class="fa-regular fa-copy"></i>
+            <span id="copy-email-text">paulrajyerra@gmail.com</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Hero Right: Interactive Azure Cloud Telemetry Hologram Card -->
+      <div class="lg:col-span-5 flex justify-center">
+        <div class="relative w-full max-w-md">
+          
+          <!-- Background Glow Blobs -->
+          <div class="absolute -top-10 -left-10 w-72 h-72 bg-azureBlue/20 rounded-full filter blur-3xl animate-glow-pulse"></div>
+          <div class="absolute -bottom-10 -right-10 w-72 h-72 bg-azureCyan/20 rounded-full filter blur-3xl animate-glow-pulse" style="animation-delay: 1.5s;"></div>
+
+          <!-- Glass Telemetry Card -->
+          <div class="glass-panel rounded-2xl p-6 sm:p-7 relative border border-azureBlue/30 overflow-hidden" id="hero-card">
+            
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-azureCyan/5 to-transparent h-24 pointer-events-none animate-scanline"></div>
+
+            <!-- Card Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-alertRed inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-infraAmber inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-terminalEmerald inline-block"></span>
+              </div>
+              <span class="font-mono text-xs text-azureCyan tracking-wider flex items-center gap-1.5">
+                <i class="fa-brands fa-linux"></i> AZURE_OPS://LIVE
+              </span>
+            </div>
+
+            <!-- Profile Summary & Cert Badge -->
+            <div class="flex items-center gap-4 mb-6">
+              <div class="relative">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-azureBlue via-azureCyan to-neonViolet p-[2px] shadow-lg">
+                  <div class="w-full h-full bg-deepNavy rounded-[14px] flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-azureCyan"></i>
+                  </div>
+                </div>
+                <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-terminalEmerald border-2 border-deepNavy flex items-center justify-center text-[10px] text-black font-bold">✓</span>
+              </div>
+              <div>
+                <h3 class="font-heading font-bold text-xl text-white">Yerra Paul Raj</h3>
+                <p class="text-xs text-slate-400 font-mono">B.Tech | Aeronautical Eng.</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-[11px] px-2 py-0.5 rounded bg-azureBlue/20 text-azureCyan border border-azureBlue/40 font-mono font-medium">Blackbaud Specialist</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live DevOps Telemetry Grid -->
+            <div class="space-y-3 font-mono text-xs">
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
+                <span class="text-slate-400 flex items-center gap-2">
+                  <i class="fa-solid fa-certificate text-azureCyan"></i> Certification:
+                </span>
+                <span class="text-white font-semibold">AZ-104 (Associate)</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
+                <span class="text-slate-400 flex items-center gap-2">
+                  <i class="fa-solid fa-cubes-stacked text-neonViolet"></i> Infrastructure:
+                </span>
+                <span class="text-terminalEmerald font-semibold">Terraform Multi-Tier</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
+                <span class="text-slate-400 flex items-center gap-2">
+                  <i class="fa-solid fa-clock text-infraAmber"></i> Prod Support:
+                </span>
+                <span class="text-white font-semibold">2.5+ Years Experience</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
+                <span class="text-slate-400 flex items-center gap-2">
+                  <i class="fa-solid fa-terminal text-terminalEmerald"></i> Shell & Automation:
+                </span>
+                <span class="text-azureCyan font-semibold">PowerShell / Bash</span>
+              </div>
+            </div>
+
+            <!-- Terminal Pulse Bottom Bar -->
+            <div class="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span class="flex items-center gap-1.5 text-terminalEmerald">
+                <span class="w-2 h-2 rounded-full bg-terminalEmerald animate-pulse"></span>
+                VNet Subnets: Healthy
+              </span>
+              <span class="text-slate-400">Hyderabad, IN</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="architecture" class="py-20 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 border-t border-white/5">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azureBlue/15 text-azureCyan text-xs font-mono mb-3 border border-azureBlue/30">
+        <i class="fa-solid fa-diagram-project"></i> FEATURED INFRASTRUCTURE PROJECT
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-white">
+        Azure 3-Tier Architecture Automation
+      </h2>
+      <p class="text-slate-400 mt-3 text-base">
+        Provisioned with modular, version-controlled <span class="text-azureCyan font-medium">Terraform IaC</span>. Interactive topology below: click each tier to inspect subnet IP allocations, Network Security Groups (NSGs), and corresponding HCL definitions.
+      </p>
+    </div>
+
+    <!-- Architecture Interactive Canvas / Diagram Box -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Visualizer Left: Diagram with Clickable Interactive Nodes -->
+      <div class="lg:col-span-7 glass-panel rounded-2xl p-6 sm:p-8 relative">
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+          <div class="flex items-center gap-2 text-xs font-mono text-slate-300">
+            <i class="fa-solid fa-cloud text-azureCyan"></i>
+            <span>VNet CIDR: 10.0.0.0/16 (East US)</span>
+          </div>
+          <span class="text-xs font-mono text-terminalEmerald bg-terminalEmerald/10 border border-terminalEmerald/30 px-2 py-0.5 rounded">
+            State: Remote Azure Blob Backend
+          </span>
+        </div>
+
+        <!-- Visual Flow: Internet -> App Gateway -> Web -> App -> DB Tier -->
+        <div class="space-y-4">
+          
+          <!-- Edge / App Gateway -->
+          <button onclick="selectTier('appgw')" id="tier-btn-appgw" class="w-full text-left p-4 rounded-xl border border-azureCyan/40 bg-azureBlue/10 hover:bg-azureBlue/20 transition-all flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-azureBlue/30 border border-azureCyan/50 flex items-center justify-center text-azureCyan">
+                <i class="fa-solid fa-shield-halved text-base"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-azureCyan flex items-center gap-2">
+                  <span>Azure Application Gateway & WAF</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-azureCyan/20 text-azureCyan">Public Edge</span>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">10.0.1.0/24 · SSL Offloading & HTTP Path Routing</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-azureCyan transition-transform"></i>
+          </button>
+
+          <!-- Bastion Host Subnet -->
+          <button onclick="selectTier('bastion')" id="tier-btn-bastion" class="w-full text-left p-4 rounded-xl border border-white/10 bg-black/30 hover:border-azureBlue/40 hover:bg-azureBlue/5 transition-all flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-neonViolet/20 border border-neonViolet/40 flex items-center justify-center text-neonViolet">
+                <i class="fa-solid fa-lock text-base"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-neonViolet flex items-center gap-2">
+                  <span>AzureBastionSubnet</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-neonViolet/20 text-neonViolet">Zero Public IPs</span>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">10.0.2.0/26 · Secure TLS RDP/SSH Management</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-neonViolet transition-transform"></i>
+          </button>
+
+          <!-- Web Subnet (Tier 1) -->
+          <button onclick="selectTier('web')" id="tier-btn-web" class="w-full text-left p-4 rounded-xl border border-white/10 bg-black/30 hover:border-azureCyan/40 hover:bg-azureBlue/5 transition-all flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-azureBlue/20 border border-azureBlue/40 flex items-center justify-center text-azureBlue">
+                <i class="fa-solid fa-globe text-base"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-azureCyan flex items-center gap-2">
+                  <span>Tier 1: Web Presentation Subnet</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-azureBlue/20 text-azureCyan">Scale Set</span>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">10.0.10.0/24 · NGINX reverse-proxy · Ingress only from App Gateway</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-azureCyan transition-transform"></i>
+          </button>
+
+          <!-- App Subnet (Tier 2) -->
+          <button onclick="selectTier('app')" id="tier-btn-app" class="w-full text-left p-4 rounded-xl border border-white/10 bg-black/30 hover:border-terminalEmerald/40 hover:bg-terminalEmerald/5 transition-all flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-terminalEmerald/20 border border-terminalEmerald/40 flex items-center justify-center text-terminalEmerald">
+                <i class="fa-solid fa-server text-base"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-terminalEmerald flex items-center gap-2">
+                  <span>Tier 2: Business Logic / Microservices</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-terminalEmerald/20 text-terminalEmerald">Internal LB</span>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">10.0.20.0/24 · REST APIs · Ingress restricted to Tier 1 NSG only</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-terminalEmerald transition-transform"></i>
+          </button>
+
+          <!-- Database Subnet (Tier 3) -->
+          <button onclick="selectTier('db')" id="tier-btn-db" class="w-full text-left p-4 rounded-xl border border-white/10 bg-black/30 hover:border-infraAmber/40 hover:bg-infraAmber/5 transition-all flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-infraAmber/20 border border-infraAmber/40 flex items-center justify-center text-infraAmber">
+                <i class="fa-solid fa-database text-base"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-infraAmber flex items-center gap-2">
+                  <span>Tier 3: Database & Persistent Storage</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-infraAmber/20 text-infraAmber">Encrypted At Rest</span>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">10.0.30.0/24 · Azure SQL / PostgreSQL · Ingress restricted to Tier 2</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-infraAmber transition-transform"></i>
+          </button>
+
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-400">
+          <span><i class="fa-solid fa-circle-check text-terminalEmerald"></i> Least Privilege NSG Rules Active</span>
+          <span><i class="fa-solid fa-key text-azureCyan"></i> Secrets in Azure Key Vault</span>
+        </div>
+      </div>
+
+      <!-- Visualizer Right: Dynamic HCL Code & Subnet Specs Viewer -->
+      <div class="lg:col-span-5 glass-panel rounded-2xl p-6 relative">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+          <div class="flex items-center gap-2 font-mono text-xs text-slate-300">
+            <i class="fa-brands fa-hashicorp text-azureCyan"></i>
+            <span id="tier-title" class="font-bold text-white">Application Gateway Module</span>
+          </div>
+          <button id="copy-hcl-btn" onclick="copyHclSnippet()" class="text-xs text-slate-400 hover:text-azureCyan flex items-center gap-1 font-mono">
+            <i class="fa-regular fa-clone"></i> Copy HCL
+          </button>
+        </div>
+
+        <p id="tier-description" class="text-xs text-slate-300 mb-4 leading-relaxed">
+          Acts as the layer 7 reverse-proxy, TLS terminator, and single public ingress point. Automatically distributes HTTP/HTTPS traffic to the Web Tier backend pool.
+        </p>
+
+        <!-- Spec Badges -->
+        <div class="grid grid-cols-2 gap-2 text-xs font-mono mb-4" id="tier-specs">
+          <div class="bg-black/40 p-2.5 rounded-lg border border-white/5">
+            <span class="text-slate-500 block text-[10px]">SUBNET CIDR</span>
+            <span class="text-azureCyan font-bold" id="spec-cidr">10.0.1.0/24</span>
+          </div>
+          <div class="bg-black/40 p-2.5 rounded-lg border border-white/5">
+            <span class="text-slate-500 block text-[10px]">SECURITY POLICY</span>
+            <span class="text-terminalEmerald font-bold" id="spec-security">WAF v2 / SSL 443</span>
+          </div>
+        </div>
+
+        <!-- HCL Code Window -->
+        <div class="relative bg-black/60 rounded-xl p-4 border border-white/10 text-xs font-mono overflow-x-auto max-h-[310px]">
+          <pre><code id="tier-code" class="text-slate-300"># Terraform: Azure Application Gateway Resource
+resource "azurerm_application_gateway" "network" {
+  name                = "appgw-prod-eastus-01"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku {
+    name     = "WAF_v2"
+    tier     = "WAF_v2"
+    capacity = 2
+  }
+  gateway_ip_configuration {
+    name      = "appgw-ip-config"
+    subnet_id = azurerm_subnet.appgw_subnet.id
+  }
+}</code></pre>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section id="pipeline" class="py-20 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 border-t border-white/5">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azureBlue/15 text-azureCyan text-xs font-mono mb-3 border border-azureBlue/30">
+        <i class="fa-solid fa-code-commit"></i> AZURE DEVOPS YAML PIPELINE SIMULATOR
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-white">
+        Automated Git-to-Cloud Delivery Cycle
+      </h2>
+      <p class="text-slate-400 mt-3 text-base">
+        Experience a live execution of Paul's automated Azure DevOps multi-stage pipeline. Click <strong>"Trigger Pipeline"</strong> to watch automated validation, static security scanning, infrastructure planning, and zero-downtime deployment.
+      </p>
+    </div>
+
+    <!-- Simulator Shell Container -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 relative">
+      
+      <!-- Top Bar: Pipeline Metadata & Controls -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-azureBlue/20 border border-azureBlue/40 flex items-center justify-center text-azureCyan">
+            <i class="fa-solid fa-play"></i>
+          </div>
+          <div>
+            <h3 class="font-mono text-sm font-bold text-white flex items-center gap-2">
+              azure-pipelines.release.yml
+              <span id="pipeline-status-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">STATUS: IDLE</span>
+            </h3>
+            <span class="text-xs text-slate-400 font-mono">Branch: <strong class="text-slate-200">main</strong> · Commit: <strong class="text-slate-200 font-mono">c781d4f [iac: update nsg rules]</strong></span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <button id="trigger-pipeline-btn" onclick="runPipelineSimulation()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-azureBlue to-azureCyan text-black font-bold text-xs tracking-wider uppercase hover:shadow-[0_0_20px_rgba(0,210,255,0.4)] transition-all flex items-center gap-2">
+            <i class="fa-solid fa-bolt"></i> Trigger Pipeline
+          </button>
+          <button onclick="resetPipelineSimulation()" class="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white text-xs font-mono transition-all">
+            <i class="fa-solid fa-arrows-rotate"></i> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Pipeline Stage Nodes (Horizontal Visualizer) -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 py-6" id="pipeline-stages">
+        
+        <!-- Stage 1 -->
+        <div id="stage-card-0" class="p-4 rounded-xl border border-white/10 bg-black/40 text-center transition-all">
+          <div class="w-8 h-8 mx-auto mb-2 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-mono" id="stage-icon-0">
+            1
+          </div>
+          <div class="text-xs font-bold text-white">Terraform Format & Lint</div>
+          <span class="text-[10px] text-slate-400 font-mono block mt-1" id="stage-status-0">Waiting</span>
+        </div>
+
+        <!-- Stage 2 -->
+        <div id="stage-card-1" class="p-4 rounded-xl border border-white/10 bg-black/40 text-center transition-all">
+          <div class="w-8 h-8 mx-auto mb-2 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-mono" id="stage-icon-1">
+            2
+          </div>
+          <div class="text-xs font-bold text-white">Security Scan (Tfsec)</div>
+          <span class="text-[10px] text-slate-400 font-mono block mt-1" id="stage-status-1">Waiting</span>
+        </div>
+
+        <!-- Stage 3 -->
+        <div id="stage-card-2" class="p-4 rounded-xl border border-white/10 bg-black/40 text-center transition-all">
+          <div class="w-8 h-8 mx-auto mb-2 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-mono" id="stage-icon-2">
+            3
+          </div>
+          <div class="text-xs font-bold text-white">Terraform Plan</div>
+          <span class="text-[10px] text-slate-400 font-mono block mt-1" id="stage-status-2">Waiting</span>
+        </div>
+
+        <!-- Stage 4 -->
+        <div id="stage-card-3" class="p-4 rounded-xl border border-white/10 bg-black/40 text-center transition-all">
+          <div class="w-8 h-8 mx-auto mb-2 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-mono" id="stage-icon-3">
+            4
+          </div>
+          <div class="text-xs font-bold text-white">Azure Deploy (Apply)</div>
+          <span class="text-[10px] text-slate-400 font-mono block mt-1" id="stage-status-3">Waiting</span>
+        </div>
+
+        <!-- Stage 5 -->
+        <div id="stage-card-4" class="p-4 rounded-xl border border-white/10 bg-black/40 text-center transition-all col-span-2 md:col-span-1">
+          <div class="w-8 h-8 mx-auto mb-2 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-mono" id="stage-icon-4">
+            5
+          </div>
+          <div class="text-xs font-bold text-white">Synthetic Healthcheck</div>
+          <span class="text-[10px] text-slate-400 font-mono block mt-1" id="stage-status-4">Waiting</span>
+        </div>
+
+      </div>
+
+      <!-- Live Terminal Streaming Console -->
+      <div class="mt-2 bg-black/80 rounded-xl border border-white/10 p-4 font-mono text-xs relative overflow-hidden">
+        <div class="flex items-center justify-between pb-2 border-b border-white/10 mb-3 text-slate-400 text-[11px]">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-azureCyan animate-pulse"></span>
+            AGENT: Azure Hosted Linux Agent (Ubuntu-22.04-x64)
+          </span>
+          <span id="pipeline-timer">Elapsed: 00:00s</span>
+        </div>
+        <div id="pipeline-console" class="h-44 overflow-y-auto space-y-1.5 text-slate-300 pr-2">
+          <div class="text-slate-500">// Pipeline ready. Click "Trigger Pipeline" above to begin automated cloud execution.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="incident-simulator" class="py-20 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 border-t border-white/5">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-alertRed/15 text-alertRed text-xs font-mono mb-3 border border-alertRed/30">
+        <i class="fa-solid fa-triangle-exclamation"></i> PRODUCTION INCIDENT RCA SIMULATOR
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-white">
+        Real-World Production Troubleshooting
+      </h2>
+      <p class="text-slate-400 mt-3 text-base">
+        Paul's 2.5+ years of frontline technical support at <strong class="text-white">Blackbaud</strong> involved analyzing complex <code>.HAR</code> traces, diagnosing API token expirations, resolving DNS misconfigurations, and mitigating production defects. Try solving this production outage scenario below:
+      </p>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 relative">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Outage Brief & Live Logs -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="p-4 rounded-xl bg-alertRed/10 border border-alertRed/30 flex items-start gap-3">
+            <i class="fa-solid fa-fire text-alertRed text-xl mt-0.5"></i>
+            <div>
+              <div class="text-sm font-bold text-white flex items-center gap-2">
+                <span>INCIDENT #BB-8492: Gateway HTTP 502 Bad Gateway</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-alertRed/20 text-alertRed uppercase">Severity-1</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Client reports their enterprise payment processing endpoint intermittently fails with 502 Bad Gateway. Downstream services are unresponsive.
+              </p>
+            </div>
+          </div>
+
+          <!-- HAR Log Excerpt -->
+          <div class="bg-black/60 rounded-xl p-4 border border-white/10 font-mono text-xs">
+            <div class="text-slate-400 text-[11px] mb-2 flex items-center justify-between border-b border-white/5 pb-1">
+              <span>client_telemetry_dump.har</span>
+              <span class="text-alertRed">ERR_CONNECTION_TIMED_OUT</span>
+            </div>
+            <pre class="text-slate-300 leading-5 text-[11px] overflow-x-auto">
+{
+  "request": {
+    "method": "POST",
+    "url": "https://api.blackbaud.com/v2/donations/checkout",
+    "headers": [{ "name": "Host", "value": "api.blackbaud.com" }]
+  },
+  "response": {
+    "status": 502,
+    "statusText": "Bad Gateway",
+    "error": "Backend pool health probe timeout: Port 443 unresponsive"
+  }
+}
+            </pre>
+          </div>
+
+          <!-- Diagnostic Clues -->
+          <div class="p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-mono space-y-1 text-slate-300">
+            <span class="text-azureCyan font-bold">Investigation Telemetry:</span>
+            <div class="flex items-center gap-2 text-slate-400">
+              <i class="fa-solid fa-check text-terminalEmerald"></i> DNS resolves correctly to Public VIP 52.176.43.12
+            </div>
+            <div class="flex items-center gap-2 text-slate-400">
+              <i class="fa-solid fa-xmark text-alertRed"></i> Backend Health Probe to Subnet 10.0.20.0/24: Port 443 TCP Failure
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Diagnostic Decision Tree -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="text-xs font-mono text-slate-300 mb-2 font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-stethoscope text-azureCyan"></i>
+            SELECT TROUBLESHOOTING ACTION:
+          </div>
+
+          <!-- Option 1 -->
+          <button onclick="diagnoseIncident('option1')" class="w-full text-left p-3.5 rounded-xl bg-black/40 hover:bg-azureBlue/15 border border-white/10 hover:border-azureCyan/50 transition-all text-xs font-mono text-slate-200 flex items-center justify-between group">
+            <span>A) Inspect NSG inbound security rules between App Gateway & Backend Subnet</span>
+            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-azureCyan transition-transform"></i>
+          </button>
+
+          <!-- Option 2 -->
+          <button onclick="diagnoseIncident('option2')" class="w-full text-left p-3.5 rounded-xl bg-black/40 hover:bg-azureBlue/15 border border-white/10 hover:border-azureCyan/50 transition-all text-xs font-mono text-slate-200 flex items-center justify-between group">
+            <span>B) Re-register Public DNS CNAME record for api.blackbaud.com</span>
+            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-azureCyan transition-transform"></i>
+          </button>
+
+          <!-- Option 3 -->
+          <button onclick="diagnoseIncident('option3')" class="w-full text-left p-3.5 rounded-xl bg-black/40 hover:bg-azureBlue/15 border border-white/10 hover:border-azureCyan/50 transition-all text-xs font-mono text-slate-200 flex items-center justify-between group">
+            <span>C) Flush local browser cache and regenerate client OAuth bearer token</span>
+            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-azureCyan transition-transform"></i>
+          </button>
+
+          <!-- Diagnostic Feedback Box -->
+          <div id="rca-feedback-box" class="hidden p-4 rounded-xl border text-xs font-mono transition-all">
+            <div id="rca-feedback-title" class="font-bold text-sm mb-1"></div>
+            <div id="rca-feedback-body" class="text-slate-300 leading-relaxed"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="py-20 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 border-t border-white/5">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azureBlue/15 text-azureCyan text-xs font-mono mb-3 border border-azureBlue/30">
+        <i class="fa-solid fa-layer-group"></i> COMPETENCY MATRIX & INTERACTIVE SHELL
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-white">
+        Cloud, IaC & DevOps Tech Stack
+      </h2>
+      <p class="text-slate-400 mt-3 text-base">
+        Filter skills by engineering domain, or launch commands in the interactive <strong class="text-azureCyan font-mono">paulraj-cli</strong> shell below.
+      </p>
+    </div>
+
+    <!-- Skills Category Filter Buttons -->
+    <div class="flex flex-wrap justify-center gap-2 mb-10">
+      <button onclick="filterSkills('all')" class="skill-filter-btn px-4 py-1.5 rounded-full text-xs font-mono bg-azureCyan text-black font-bold transition-all" data-category="all">All Disciplines</button>
+      <button onclick="filterSkills('iac')" class="skill-filter-btn px-4 py-1.5 rounded-full text-xs font-mono bg-white/5 hover:bg-white/10 text-slate-300 transition-all" data-category="iac">CI/CD & IaC</button>
+      <button onclick="filterSkills('azure')" class="skill-filter-btn px-4 py-1.5 rounded-full text-xs font-mono bg-white/5 hover:bg-white/10 text-slate-300 transition-all" data-category="azure">Azure Cloud Core</button>
+      <button onclick="filterSkills('scripting')" class="skill-filter-btn px-4 py-1.5 rounded-full text-xs font-mono bg-white/5 hover:bg-white/10 text-slate-300 transition-all" data-category="scripting">Scripting & Systems</button>
+      <button onclick="filterSkills('troubleshooting')" class="skill-filter-btn px-4 py-1.5 rounded-full text-xs font-mono bg-white/5 hover:bg-white/10 text-slate-300 transition-all" data-category="troubleshooting">Production Debugging</button>
+    </div>
+
+    <!-- Dynamic Skill Cards Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-14" id="skills-grid">
+      <!-- Generated via JavaScript with detailed badges -->
+    </div>
+
+    <!-- Interactive Cloud Terminal CLI (paulraj-cli) -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-7 relative border border-azureCyan/30">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-alertRed"></div>
+          <div class="w-3 h-3 rounded-full bg-infraAmber"></div>
+          <div class="w-3 h-3 rounded-full bg-terminalEmerald"></div>
+          <span class="text-xs font-mono text-slate-400 ml-2">paulraj-cli v2.4 (x86_64-azure-cloudshell)</span>
+        </div>
+        <span class="text-xs font-mono text-azureCyan">type: help</span>
+      </div>
+
+      <!-- Terminal Output Screen -->
+      <div id="cli-output" class="font-mono text-xs text-slate-300 space-y-2 h-56 overflow-y-auto pr-2 mb-3">
+        <div>Welcome to <span class="text-azureCyan font-bold">paulraj-cli</span> [Yerra Paul Raj Cloud Console].</div>
+        <div>System authenticated: <span class="text-terminalEmerald">AZ-104 Certified Administrator Associate</span>.</div>
+        <div class="text-slate-400">Type <span class="text-azureCyan">help</span> to view available operations, or try <span class="text-azureCyan">terraform plan</span>, <span class="text-azureCyan">cat skills.json</span>, <span class="text-azureCyan">whoami</span>, <span class="text-azureCyan">contact</span>.</div>
+      </div>
+
+      <!-- Terminal Input Line -->
+      <div class="flex items-center gap-2 font-mono text-xs pt-2 border-t border-white/10">
+        <span class="text-terminalEmerald font-bold">paulraj@azure-devops:~$</span>
+        <input type="text" id="cli-input" class="flex-1 bg-transparent text-white outline-none font-mono" placeholder="type command here..." autofocus />
+      </div>
+    </div>
+  </section>
+
+  <section id="experience" class="py-20 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 border-t border-white/5">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azureBlue/15 text-azureCyan text-xs font-mono mb-3 border border-azureBlue/30">
+        <i class="fa-solid fa-briefcase"></i> CAREER TIMELINE & REAL-WORLD IMPACT
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-white">
+        Engineering & Support Journey
+      </h2>
+      <p class="text-slate-400 mt-3 text-base">
+        A progressive transition from high-velocity technical support into scalable Azure Cloud DevOps engineering.
+      </p>
+    </div>
+
+    <!-- Experience Timeline Container -->
+    <div class="space-y-8 relative before:absolute before:inset-0 before:left-4 md:before:left-1/2 before:w-0.5 before:bg-gradient-to-b before:from-azureBlue before:via-azureCyan before:to-transparent">
+      
+      <!-- Role 1: Blackbaud -->
+      <div class="relative flex flex-col md:flex-row items-start group">
+        <div class="hidden md:flex md:w-1/2 justify-end pr-8 text-right">
+          <div>
+            <span class="px-2.5 py-1 rounded bg-azureBlue/20 text-azureCyan font-mono text-xs font-bold border border-azureBlue/30">Feb 2025 – Jul 2026</span>
+            <div class="text-xs text-slate-400 mt-1 font-mono">Hyderabad, Telangana</div>
+          </div>
+        </div>
+
+        <!-- Node Icon -->
+        <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-deepNavy border-2 border-azureCyan flex items-center justify-center text-azureCyan z-20 shadow-[0_0_12px_rgba(0,210,255,0.6)]">
+          <i class="fa-solid fa-server text-xs"></i>
+        </div>
+
+        <div class="ml-12 md:ml-0 md:w-1/2 md:pl-8">
+          <div class="glass-panel p-6 rounded-2xl hover:border-azureCyan/50 transition-all">
+            <div class="flex items-center justify-between md:hidden mb-2">
+              <span class="px-2 py-0.5 rounded bg-azureBlue/20 text-azureCyan font-mono text-xs">Feb 2025 – Jul 2026</span>
+            </div>
+            <h3 class="text-lg font-bold font-heading text-white">Technical Support Specialist, Associate</h3>
+            <div class="text-azureCyan font-mono text-xs mb-3 font-semibold">Blackbaud · Hyderabad</div>
+            <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+              <li>Troubleshot production API, DNS, and integration issues directly transferable to CI/CD pipeline diagnostics.</li>
+              <li>Analyzed and debugged <strong class="text-white">.HAR network traces and server event logs</strong> for root-cause analysis, mirroring deployment failure triage.</li>
+              <li>Investigated software defects to maintain consistent system reliability under strict SLAs.</li>
+              <li>Employed <strong class="text-white">AI-assisted diagnostic tooling</strong> to accelerate defect resolution and streamline escalation workflows.</li>
+              <li>Pinpointed and resolved code-level discrepancies on client-facing applications to ensure continuous uptime.</li>
+            </ul>
+            <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono">
+              <span class="px-2 py-0.5 rounded bg-white/5 text-slate-300">API Troubleshooting</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-slate-300">.HAR Analysis</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-slate-300">DNS Diagnosis</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-slate-300">AI Workflows</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role 2: Teleperformance -->
+      <div class="relative flex flex-col md:flex-row items-start group">
+        <div class="hidden md:flex md:w-1/2 justify-end pr-8 text-right">
+          <div>
+            <span class="px-2.5 py-1 rounded bg-white/10 text-slate-300 font-mono text-xs font-bold border border-white/10">Oct 2023 – Feb 2025</span>
+            <div class="text-xs text-slate-400 mt-1 font-mono">Hyderabad, Telangana</div>
+          </div>
+        </div>
+
+        <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-deepNavy border-2 border-white/40 flex items-center justify-center text-slate-300 z-20">
+          <i class="fa-solid fa-headset text-xs"></i>
+        </div>
+
+        <div class="ml-12 md:ml-0 md:w-1/2 md:pl-8">
+          <div class="glass-panel p-6 rounded-2xl hover:border-azureBlue/40 transition-all">
+            <div class="flex items-center justify-between md:hidden mb-2">
+              <span class="px-2 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-xs">Oct 2023 – Feb 2025</span>
+            </div>
+            <h3 class="text-lg font-bold font-heading text-white">Tech Support Analyst-I</h3>
+            <div class="text-slate-300 font-mono text-xs mb-3 font-semibold">Teleperformance · Hyderabad</div>
+            <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+              <li>Diagnosed and resolved hardware/software system incidents under strict uptime pressure.</li>
+              <li>Collaborated cross-functionally with engineering teams to escalate recurring application anomalies.</li>
+              <li>Maintained structured incident tickets and post-mortem resolution logs within enterprise CRM platforms.</li>
+            </ul>
+            <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono">
+              <span class="px-2 py-0.5 rounded bg-white/5 text-slate-300">Incident Management</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-slate-300">CRM Systems</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-slate-300">Cross-Team Escalation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role 3: TATA Technologies -->
+      <div class="relative flex flex-col md:flex-row items-start group">
+        <div class="hidden md:flex md:w-1/2 justify-end pr-8 text-right">
+          <div>
+            <span class="px-2.5 py-1 rounded bg-white/10 text-slate-300 font-mono text-xs font-bold border border-white/10">Jan 2020 – Mar 2020</span>
+            <div class="text-xs text-slate-400 mt-1 font-mono">Hyderabad, Telangana</div>
+          </div>
+        </div>
+
+        <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-deepNavy border-2 border-white/40 flex items-center justify-center text-slate-300 z-20">
+          <i class="fa-solid fa-building text-xs"></i>
+        </div>
+
+        <div class="ml-12 md:ml-0 md:w-1/2 md:pl-8">
+          <div class="glass-panel p-6 rounded-2xl hover:border-azureBlue/40 transition-all">
+            <div class="flex items-center justify-between md:hidden mb-2">
+              <span class="px-2 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-xs">Jan 2020 – Mar 2020</span>
+            </div>
+            <h3 class="text-lg font-bold font-heading text-white">Engineering Intern</h3>
+            <div class="text-slate-300 font-mono text-xs mb-3 font-semibold">TATA Technologies · Hyderabad</div>
+            <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+              <li>Supported enterprise implementation and customization of Windchill/ENOVIA PLM systems.</li>
+              <li>Participated in system testing, boundary verification, and authoring end-user operational documentation.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Education & Academic Foundation -->
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="glass-panel p-6 rounded-2xl border border-white/10 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-azureBlue/20 border border-azureBlue/40 flex items-center justify-center text-azureCyan text-xl">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono text-azureCyan">GRADUATED 2021</span>
+          <h4 class="text-base font-bold text-white">B.Tech in Aeronautical Engineering</h4>
+          <p class="text-xs text-slate-400">MLR Institute of Technology, Hyderabad, Telangana</p>
+        </div>
+      </div>
+
+      <div class="glass-panel p-6 rounded-2xl border border-white/10 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-neonViolet/20 border border-neonViolet/40 flex items-center justify-center text-neonViolet text-xl">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono text-neonViolet">INTERMEDIATE (2017)</span>
+          <h4 class="text-base font-bold text-white">Higher Secondary (MPC)</h4>
+          <p class="text-xs text-slate-400">Narayana Junior College, Hyderabad, Telangana</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="py-20 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 border-t border-white/5">
+    <div class="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-azureCyan/40">
+      
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-azureBlue/20 rounded-full filter blur-3xl pointer-events-none"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <!-- Contact Brief -->
+        <div class="lg:col-span-7 space-y-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azureBlue/15 text-azureCyan text-xs font-mono border border-azureBlue/30">
+            <i class="fa-solid fa-handshake"></i> RECRUITER & HIRING MANAGER DISCOVERY
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold font-heading text-white">
+            Ready to Accelerate Your Azure Cloud Infrastructure?
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Whether you are expanding your cloud engineering team, modernizing legacy deployments with Terraform, or searching for an engineer who excels under production incident pressure — I am available for immediate interviews.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 font-mono text-xs">
+            <a href="mailto:paulrajyerra@gmail.com" class="p-3.5 rounded-xl bg-black/40 border border-white/10 hover:border-azureCyan/50 flex items-center gap-3 group transition-all">
+              <i class="fa-regular fa-envelope text-azureCyan text-base"></i>
+              <div>
+                <span class="text-slate-400 block text-[10px]">EMAIL ADDRESS</span>
+                <span class="text-white group-hover:text-azureCyan font-bold">paulrajyerra@gmail.com</span>
+              </div>
+            </a>
+
+            <a href="tel:+918885351138" class="p-3.5 rounded-xl bg-black/40 border border-white/10 hover:border-terminalEmerald/50 flex items-center gap-3 group transition-all">
+              <i class="fa-solid fa-phone text-terminalEmerald text-base"></i>
+              <div>
+                <span class="text-slate-400 block text-[10px]">PHONE / WHATSAPP</span>
+                <span class="text-white group-hover:text-terminalEmerald font-bold">+91-8885351138</span>
+              </div>
+            </a>
+
+            <a href="https://linkedin.com/in/paulrajyerra" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-black/40 border border-white/10 hover:border-azureBlue/50 flex items-center gap-3 group transition-all">
+              <i class="fa-brands fa-linkedin-in text-azureBlue text-base"></i>
+              <div>
+                <span class="text-slate-400 block text-[10px]">LINKEDIN</span>
+                <span class="text-white group-hover:text-azureBlue font-bold">/in/paulrajyerra</span>
+              </div>
+            </a>
+
+            <div class="p-3.5 rounded-xl bg-black/40 border border-white/10 flex items-center gap-3">
+              <i class="fa-solid fa-location-dot text-infraAmber text-base"></i>
+              <div>
+                <span class="text-slate-400 block text-[10px]">LOCATION</span>
+                <span class="text-white font-bold">Hyderabad, Telangana</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Message Console Form -->
+        <div class="lg:col-span-5 bg-black/60 p-6 rounded-2xl border border-white/10">
+          <h3 class="text-sm font-bold font-mono text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-paper-plane text-azureCyan"></i> Dispatch Direct Message
+          </h3>
+          <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-3 font-mono text-xs">
+            <div>
+              <label class="block text-slate-400 mb-1">YOUR NAME / COMPANY</label>
+              <input type="text" id="recruiter-name" required class="w-full px-3.5 py-2.5 rounded-lg bg-white/5 border border-white/10 focus:border-azureCyan text-white outline-none" placeholder="e.g. Sarah Connor · Cloud Systems Inc" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">REACHOUT TOPIC</label>
+              <input type="text" id="recruiter-subject" required class="w-full px-3.5 py-2.5 rounded-lg bg-white/5 border border-white/10 focus:border-azureCyan text-white outline-none" placeholder="e.g. Azure DevOps Engineer Interview" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">MESSAGE / OPPORTUNITY DETAILS</label>
+              <textarea id="recruiter-message" rows="3" required class="w-full px-3.5 py-2.5 rounded-lg bg-white/5 border border-white/10 focus:border-azureCyan text-white outline-none" placeholder="Role description, tech stack, location/remote preference..."></textarea>
+            </div>
+            <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-azureBlue to-azureCyan text-black font-bold uppercase tracking-wider hover:opacity-95 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-envelope-circle-check"></i>
+              <span>Send To Paul</span>
+            </button>
+            <div id="form-feedback" class="hidden text-center text-terminalEmerald pt-2 text-[11px]"></div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-10 border-t border-white/5 text-center font-mono text-xs text-slate-500 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        © 2026 <span class="text-white font-semibold">Yerra Paul Raj</span>. Built for High-Availability Cloud Delivery.
+      </div>
+      <div class="flex items-center space-x-6 text-slate-400">
+        <a href="#about" class="hover:text-azureCyan transition-colors">Top</a>
+        <a href="#architecture" class="hover:text-azureCyan transition-colors">Architecture</a>
+        <a href="#pipeline" class="hover:text-azureCyan transition-colors">CI/CD</a>
+        <a href="https://linkedin.com/in/paulrajyerra" target="_blank" rel="noopener noreferrer" class="hover:text-azureCyan transition-colors">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Notification Toast Container -->
+  <div id="toast" class="fixed top-24 right-6 z-50 transform translate-x-full opacity-0 transition-all duration-300 bg-azureDark border border-azureCyan/50 text-white font-mono text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+    <i class="fa-solid fa-circle-check text-azureCyan text-base" id="toast-icon"></i>
+    <span id="toast-msg">Action performed successfully</span>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. WEB AUDIO API SYNTHESIZER (Sound FX without external MP3 assets)
+       ========================================================================== */
+    let audioCtx = null;
+    let sfxEnabled = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playAudio(type) {
+      if (!sfxEnabled) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'telemetry') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(440, now + 0.12);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } else if (type === 'deploy') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(950, now + 0.25);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'success') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(110, now + 0.2);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        }
+      } catch (err) {
+        console.warn('Audio synthesis issue:', err);
+      }
+    }
+
+    const sfxToggleBtn = document.getElementById('sfx-toggle');
+    const sfxIcon = document.getElementById('sfx-icon');
+    const sfxStatus = document.getElementById('sfx-status');
+
+    sfxToggleBtn.addEventListener('click', () => {
+      sfxEnabled = !sfxEnabled;
+      if (sfxEnabled) {
+        initAudio();
+        sfxIcon.className = 'fa-solid fa-volume-high text-azureCyan';
+        sfxStatus.textContent = 'SFX: ON';
+        sfxStatus.className = 'text-[11px] font-mono text-azureCyan';
+        playAudio('success');
+        showToast('Telemetry Sound Synthesizer Active');
+      } else {
+        sfxIcon.className = 'fa-solid fa-volume-xmark text-slate-400';
+        sfxStatus.textContent = 'SFX: OFF';
+        sfxStatus.className = 'text-[11px] font-mono text-slate-400';
+        showToast('Sound Muted');
+      }
+    });
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastMsg.textContent = message;
+      if (isError) {
+        toastIcon.className = 'fa-solid fa-triangle-exclamation text-alertRed text-base';
+        toast.className = toast.className.replace('border-azureCyan/50', 'border-alertRed/50');
+      } else {
+        toastIcon.className = 'fa-solid fa-circle-check text-azureCyan text-base';
+        toast.className = toast.className.replace('border-alertRed/50', 'border-azureCyan/50');
+      }
+
+      toast.classList.remove('translate-x-full', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-x-full', 'opacity-0');
+      }, 3200);
+    }
+
+    // Email quick-copy
+    const copyEmailBtn = document.getElementById('copy-email-btn');
+    copyEmailBtn.addEventListener('click', () => {
+      const email = 'paulrajyerra@gmail.com';
+      copyTextToClipboard(email);
+      showToast('Email copied to clipboard: ' + email);
+      playAudio('telemetry');
+    });
+
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-999999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+      } catch (e) {
+        console.error('Copy failed', e);
+      }
+      document.body.removeChild(ta);
+    }
+
+    // Mobile nav toggle
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      playAudio('click');
+    });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+    });
+
+    const canvas = document.getElementById('cloud-mesh-canvas');
+    let scene, camera, renderer, particles, linesGeometry, linesMesh;
+    let particleCount = 75;
+    let particlePositions, particleVelocities;
+
+    function initThreeTopology() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+      camera.position.z = 240;
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Create Nodes
+      const geometry = new THREE.BufferGeometry();
+      particlePositions = new Float32Array(particleCount * 3);
+      particleVelocities = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        particlePositions[i * 3] = (Math.random() - 0.5) * 400;
+        particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 260;
+        particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+
+        particleVelocities.push({
+          x: (Math.random() - 0.5) * 0.4,
+          y: (Math.random() - 0.5) * 0.4,
+          z: (Math.random() - 0.5) * 0.2
+        });
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+
+      // Particle Node Material (Azure cyan)
+      const pMaterial = new THREE.PointsMaterial({
+        color: 0x00d2ff,
+        size: 3.2,
+        transparent: true,
+        opacity: 0.8
+      });
+
+      particles = new THREE.Points(geometry, pMaterial);
+      scene.add(particles);
+
+      // Lines between adjacent cloud nodes
+      linesGeometry = new THREE.BufferGeometry();
+      const lineMaterial = new THREE.LineBasicMaterial({
+        color: 0x0078d4,
+        transparent: true,
+        opacity: 0.25
+      });
+      linesMesh = new THREE.LineSegments(linesGeometry, lineMaterial);
+      scene.add(linesMesh);
+
+      animateThree();
+    }
+
+    function animateThree() {
+      requestAnimationFrame(animateThree);
+
+      const positions = particles.geometry.attributes.position.array;
+      let linePositions = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        // Apply velocity
+        positions[i * 3] += particleVelocities[i].x;
+        positions[i * 3 + 1] += particleVelocities[i].y;
+        positions[i * 3 + 2] += particleVelocities[i].z;
+
+        // Bounce back from boundaries
+        if (Math.abs(positions[i * 3]) > 200) particleVelocities[i].x *= -1;
+        if (Math.abs(positions[i * 3 + 1]) > 130) particleVelocities[i].y *= -1;
+        if (Math.abs(positions[i * 3 + 2]) > 100) particleVelocities[i].z *= -1;
+
+        // Connect nearby nodes
+        for (let j = i + 1; j < particleCount; j++) {
+          const dx = positions[i * 3] - positions[j * 3];
+          const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
+          const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+          if (dist < 65) {
+            linePositions.push(
+              positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
+              positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
+            );
+          }
+        }
+      }
+
+      particles.geometry.attributes.position.needsUpdate = true;
+      linesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+
+      // Slow rotational mesh drift
+      scene.rotation.y += 0.0006;
+      scene.rotation.x += 0.0003;
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      if (!camera || !renderer) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Mouse ambient flashlight
+    const cursorLight = document.getElementById('cursor-light');
+    window.addEventListener('mousemove', (e) => {
+      cursorLight.style.left = e.clientX + 'px';
+      cursorLight.style.top = e.clientY + 'px';
+    });
+
+    window.addEventListener('load', () => {
+      initThreeTopology();
+      renderSkillCards('all');
+    });
+
+    const tierData = {
+      appgw: {
+        title: "Azure Application Gateway & WAF v2",
+        description: "Layer 7 ingress proxy distributing HTTP/HTTPS traffic across Web Tier Virtual Machine Scale Sets. Terminates TLS, runs OWASP 3.2 prevention rules, and enforces SSL redirect policies.",
+        cidr: "10.0.1.0/24 (Public Subnet)",
+        security: "Public IP · WAF Inspection · Port 443",
+        hcl: `# Terraform: Azure Application Gateway & WAF
+resource "azurerm_application_gateway" "network" {
+  name                = "appgw-prod-eastus-01"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku {
+    name     = "WAF_v2"
+    tier     = "WAF_v2"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "appgw-ip-config"
+    subnet_id = azurerm_subnet.appgw.id
+  }
+
+  frontend_port {
+    name = "https_port"
+    port = 443
+  }
+}`
+      },
+      bastion: {
+        title: "Azure Bastion Management Subnet",
+        description: "Provides fully managed, browser-based RDP and SSH connectivity over TLS directly through the Azure portal. Zero external management ports or public IPs exposed on internal VMs.",
+        cidr: "10.0.2.0/26 (Dedicated)",
+        security: "Inbound 443 only from Azure Cloud",
+        hcl: `# Terraform: Azure Bastion Host Setup
+resource "azurerm_bastion_host" "mgmt" {
+  name                = "bastion-prod-eastus"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  ip_configuration {
+    name                 = "bastion-ip-cfg"
+    subnet_id            = azurerm_subnet.bastion.id
+    public_ip_address_id = azurerm_public_ip.bastion_pip.id
+  }
+}`
+      },
+      web: {
+        title: "Tier 1: Web Presentation Subnet",
+        description: "Hosts front-end reverse proxy clusters and static rendering engines. NSG strictly restricts ingress exclusively to traffic originating from the Application Gateway private IP.",
+        cidr: "10.0.10.0/24",
+        security: "NSG: Inbound from AppGateway Subnet ONLY",
+        hcl: `# Terraform: Tier-1 Web Subnet & NSG Association
+resource "azurerm_network_security_rule" "allow_appgw" {
+  name                        = "Allow-AppGateway-Inbound"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_address_prefix       = "10.0.1.0/24"
+  destination_port_range      = "80"
+  resource_group_name         = azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.nsg_web.name
+}`
+      },
+      app: {
+        title: "Tier 2: Business Logic / Microservices Subnet",
+        description: "Isolated application layer computing core business rules and REST APIs. Load balanced via internal Azure Standard Load Balancer. Ingress denied to external internet.",
+        cidr: "10.0.20.0/24",
+        security: "NSG: Inbound from Web Subnet (10.0.10.0/24)",
+        hcl: `# Terraform: Tier-2 App Subnet with Internal Load Balancer
+resource "azurerm_lb" "internal_app_lb" {
+  name                = "ilb-app-prod"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "Standard"
+
+  frontend_ip_configuration {
+    name                          = "InternalAppSubnetIP"
+    subnet_id                     = azurerm_subnet.app.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}`
+      },
+      db: {
+        title: "Tier 3: Database & Persistent Storage Subnet",
+        description: "Secure data persistence layer hosting high-availability Azure SQL / PostgreSQL instances. Strictly isolated with no egress to the public internet; accessible solely on port 1433/5432 from Tier 2.",
+        cidr: "10.0.30.0/24",
+        security: "NSG: Inbound from App Subnet (10.0.20.0/24) ONLY",
+        hcl: `# Terraform: Tier-3 Private Database Tier
+resource "azurerm_network_security_rule" "allow_app_to_db" {
+  name                        = "Allow-AppTier-Only"
+  priority                    = 110
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_address_prefix       = "10.0.20.0/24"
+  destination_port_range      = "1433"
+  resource_group_name         = azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.nsg_db.name
+}`
+      }
+    };
+
+    function selectTier(key) {
+      playAudio('click');
+      const data = tierData[key];
+      if (!data) return;
+
+      document.getElementById('tier-title').textContent = data.title;
+      document.getElementById('tier-description').textContent = data.description;
+      document.getElementById('spec-cidr').textContent = data.cidr;
+      document.getElementById('spec-security').textContent = data.security;
+      document.getElementById('tier-code').textContent = data.hcl;
+
+      // Update button highlights
+      ['appgw', 'bastion', 'web', 'app', 'db'].forEach(k => {
+        const btn = document.getElementById('tier-btn-' + k);
+        if (k === key) {
+          btn.className = btn.className.replace('border-white/10 bg-black/30', 'border-azureCyan/40 bg-azureBlue/15');
+        } else {
+          btn.className = btn.className.replace('border-azureCyan/40 bg-azureBlue/15', 'border-white/10 bg-black/30');
+        }
+      });
+    }
+
+    function copyHclSnippet() {
+      const code = document.getElementById('tier-code').textContent;
+      copyTextToClipboard(code);
+      showToast('Terraform HCL snippet copied to clipboard');
+      playAudio('telemetry');
+    }
+
+    let pipelineRunning = false;
+    let pipelineInterval = null;
+
+    const pipelineSteps = [
+      {
+        stageIndex: 0,
+        name: "Terraform Format & Lint",
+        logs: [
+          "> Initializing HashiCorp Terraform agent v1.6.4...",
+          "> Running: terraform fmt -check -diff",
+          "> Checking syntax and file integrity in modules/vnet...",
+          "> SUCCESS: All 14 configuration files formatted correctly."
+        ]
+      },
+      {
+        stageIndex: 1,
+        name: "Security Scan (Tfsec)",
+        logs: [
+          "> Executing static analysis security tool: tfsec v1.28.0",
+          "> Auditing NSG rule declarations for open CIDRs...",
+          "> Checking for unrestricted 0.0.0.0/0 ingress: PASSED (0 found)",
+          "> Checking Azure Key Vault purge protection & RBAC: PASSED",
+          "> SUCCESS: 0 critical vulnerabilities detected."
+        ]
+      },
+      {
+        stageIndex: 2,
+        name: "Terraform Plan",
+        logs: [
+          "> Initializing backend: azurerm blob container (key: prod.terraform.tfstate)...",
+          "> Refreshing remote state locks in Azure Blob Storage...",
+          "> Plan: 3 to add, 1 to change, 0 to destroy.",
+          "> Artifact generation: /tmp/deployment-plan.tfplan created."
+        ]
+      },
+      {
+        stageIndex: 3,
+        name: "Azure Deploy (Apply)",
+        logs: [
+          "> azurerm_resource_group.rg: Refreshing state... [id=/subscriptions/xxx/resourceGroups/rg-prod-eastus]",
+          "> azurerm_network_security_group.nsg_app: Updating rule priority...",
+          "> azurerm_application_gateway.network: Verifying health probe bindings...",
+          "> Apply complete! Resources: 3 added, 1 changed, 0 destroyed."
+        ]
+      },
+      {
+        stageIndex: 4,
+        name: "Synthetic Healthcheck",
+        logs: [
+          "> Dispatching synthetic HTTPS request to https://gateway.yerrapaulraj.azure/healthz...",
+          "> HTTP Response: 200 OK (Latency: 48ms, TLS 1.3)",
+          "> Azure Monitor: Metrics validated. Pipeline completed successfully with Zero Downtime."
+        ]
+      }
+    ];
+
+    function runPipelineSimulation() {
+      if (pipelineRunning) return;
+      pipelineRunning = true;
+      playAudio('deploy');
+
+      const consoleBox = document.getElementById('pipeline-console');
+      const badge = document.getElementById('pipeline-status-badge');
+      const timerLabel = document.getElementById('pipeline-timer');
+      
+      consoleBox.innerHTML = '';
+      badge.textContent = 'STATUS: RUNNING';
+      badge.className = 'text-[10px] px-2 py-0.5 rounded bg-azureBlue/20 text-azureCyan border border-azureCyan animate-pulse';
+
+      let currentStep = 0;
+      let logIndex = 0;
+      let startTime = Date.now();
+
+      pipelineInterval = setInterval(() => {
+        const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+        timerLabel.textContent = `Elapsed: ${elapsedSeconds}s`;
+
+        if (currentStep < pipelineSteps.length) {
+          const step = pipelineSteps[currentStep];
+          
+          // Mark stage active
+          updateStageUI(step.stageIndex, 'active');
+
+          if (logIndex < step.logs.length) {
+            const line = document.createElement('div');
+            line.className = 'text-slate-300 font-mono text-[11px]';
+            line.textContent = step.logs[logIndex];
+            consoleBox.appendChild(line);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+            playAudio('click');
+            logIndex++;
+          } else {
+            // Stage completed
+            updateStageUI(step.stageIndex, 'done');
+            currentStep++;
+            logIndex = 0;
+          }
+        } else {
+          // All done
+          clearInterval(pipelineInterval);
+          pipelineRunning = false;
+          badge.textContent = 'STATUS: DEPLOYED (PASSED)';
+          badge.className = 'text-[10px] px-2 py-0.5 rounded bg-terminalEmerald/20 text-terminalEmerald border border-terminalEmerald font-bold';
+          playAudio('success');
+          showToast('CI/CD Pipeline successfully executed to Azure');
+        }
+      }, 550);
+    }
+
+    function updateStageUI(index, status) {
+      const card = document.getElementById(`stage-card-${index}`);
+      const icon = document.getElementById(`stage-icon-${index}`);
+      const label = document.getElementById(`stage-status-${index}`);
+
+      if (status === 'active') {
+        card.className = 'p-4 rounded-xl border border-azureCyan bg-azureBlue/15 text-center transition-all shadow-[0_0_15px_rgba(0,210,255,0.2)]';
+        icon.className = 'w-8 h-8 mx-auto mb-2 rounded-full bg-azureCyan text-black flex items-center justify-center text-xs font-mono font-bold animate-spin';
+        icon.innerHTML = '<i class="fa-solid fa-spinner"></i>';
+        label.textContent = 'Running...';
+        label.className = 'text-[10px] text-azureCyan font-mono block mt-1';
+      } else if (status === 'done') {
+        card.className = 'p-4 rounded-xl border border-terminalEmerald/50 bg-terminalEmerald/10 text-center transition-all';
+        icon.className = 'w-8 h-8 mx-auto mb-2 rounded-full bg-terminalEmerald text-black flex items-center justify-center text-xs font-mono font-bold';
+        icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+        label.textContent = 'Passed (0s)';
+        label.className = 'text-[10px] text-terminalEmerald font-mono block mt-1';
+      } else {
+        card.className = 'p-4 rounded-xl border border-white/10 bg-black/40 text-center transition-all';
+        icon.className = 'w-8 h-8 mx-auto mb-2 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-mono';
+        icon.innerHTML = (index + 1).toString();
+        label.textContent = 'Waiting';
+        label.className = 'text-[10px] text-slate-400 font-mono block mt-1';
+      }
+    }
+
+    function resetPipelineSimulation() {
+      if (pipelineInterval) clearInterval(pipelineInterval);
+      pipelineRunning = false;
+
+      for (let i = 0; i < 5; i++) {
+        updateStageUI(i, 'reset');
+      }
+
+      document.getElementById('pipeline-status-badge').textContent = 'STATUS: IDLE';
+      document.getElementById('pipeline-status-badge').className = 'text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
+      document.getElementById('pipeline-timer').textContent = 'Elapsed: 00:00s';
+      const consoleBox = document.getElementById('pipeline-console');
+      consoleBox.innerHTML = '<div class="text-slate-500">// Pipeline reset. Click "Trigger Pipeline" above to run deployment stages.</div>';
+      playAudio('click');
+    }
+
+    function diagnoseIncident(option) {
+      const box = document.getElementById('rca-feedback-box');
+      const title = document.getElementById('rca-feedback-title');
+      const body = document.getElementById('rca-feedback-body');
+      box.classList.remove('hidden');
+
+      if (option === 'option1') {
+        playAudio('success');
+        box.className = 'p-4 rounded-xl border border-terminalEmerald bg-terminalEmerald/15 text-xs font-mono transition-all';
+        title.className = 'font-bold text-sm text-terminalEmerald mb-1 flex items-center gap-1.5';
+        title.innerHTML = '<i class="fa-solid fa-circle-check"></i> CORRECT ROOT CAUSE IDENTIFIED!';
+        body.innerHTML = `
+          <strong>Root Cause:</strong> A recent NSG commit inadvertently restricted traffic on port 443 to the backend scale set, causing Application Gateway health probes to fail and return HTTP 502.<br/>
+          <strong>Resolution:</strong> Updated the inbound NSG rule with priority 110 to whitelist subnet <code>10.0.1.0/24</code>. Health probes immediately turned green, restoring checkout services in under 3 minutes.
+        `;
+        showToast('Incident Solved: Root cause identified!');
+      } else if (option === 'option2') {
+        playAudio('error');
+        box.className = 'p-4 rounded-xl border border-alertRed bg-alertRed/15 text-xs font-mono transition-all';
+        title.className = 'font-bold text-sm text-alertRed mb-1 flex items-center gap-1.5';
+        title.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> INCORRECT DIAGNOSTIC STEP';
+        body.innerHTML = `
+          <strong>Result:</strong> DNS already verified as resolving accurately to Public VIP <code>52.176.43.12</code>. Modifying CNAME records introduces TTL propagation delays and does not address the internal 502 backend probe failure.
+        `;
+        showToast('Diagnostic failed. Review the .HAR telemetry.', true);
+      } else if (option === 'option3') {
+        playAudio('error');
+        box.className = 'p-4 rounded-xl border border-infraAmber bg-infraAmber/15 text-xs font-mono transition-all';
+        title.className = 'font-bold text-sm text-infraAmber mb-1 flex items-center gap-1.5';
+        title.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> INSUFFICIENT ACTION';
+        body.innerHTML = `
+          <strong>Result:</strong> OAuth bearer tokens return HTTP 401 Unauthorized or 403 Forbidden when invalid, not 502 Bad Gateway. Client-side caching does not fix infrastructure health probe timeouts.
+        `;
+        showToast('Token refresh does not resolve 502 gateway error.', true);
+      }
+    }
+
+    const skillsList = [
+      { name: "Azure DevOps Pipelines", category: "iac", level: 92, icon: "fa-solid fa-code-branch", detail: "Multi-stage YAML, Self-Hosted Agents, Environments" },
+      { name: "Terraform (IaC)", category: "iac", level: 90, icon: "fa-solid fa-cubes", detail: "Modules, Remote State, Workspaces, Variable Injection" },
+      { name: "Azure Virtual Network", category: "azure", level: 95, icon: "fa-solid fa-network-wired", detail: "Subnetting, Peering, Route Tables, Bastion" },
+      { name: "Application Gateway & WAF", category: "azure", level: 88, icon: "fa-solid fa-shield-halved", detail: "SSL Offloading, URL Routing, Health Probes" },
+      { name: "Azure Key Vault & RBAC", category: "azure", level: 89, icon: "fa-solid fa-key", detail: "Secrets Management, Managed Identities, Least Privilege" },
+      { name: "PowerShell Automation", category: "scripting", level: 86, icon: "fa-solid fa-terminal", detail: "Az Module, Workflow scripts, Desired State Config" },
+      { name: "Bash & Linux Admin", category: "scripting", level: 88, icon: "fa-brands fa-linux", detail: "Ubuntu/Debian, Cron, systemd, SSH Hardening" },
+      { name: "HAR & API Troubleshooting", category: "troubleshooting", level: 96, icon: "fa-solid fa-stethoscope", detail: "2.5+ yrs Blackbaud log diagnosis & HTTP inspection" },
+      { name: "DNS & Connectivity", category: "troubleshooting", level: 94, icon: "fa-solid fa-globe", detail: "CNAME, NS, nslookup, dig, Network Watcher" },
+      { name: "Git Version Control", category: "iac", level: 91, icon: "fa-brands fa-git-alt", detail: "Branching strategies, Gitflow, Pull Request Gates" },
+      { name: "Root Cause Analysis (RCA)", category: "troubleshooting", level: 94, icon: "fa-solid fa-magnifying-glass-chart", detail: "Incident management, post-mortems, SLA mitigation" },
+      { name: "Azure Load Balancer", category: "azure", level: 87, icon: "fa-solid fa-server", detail: "Standard SKU, Backend Pools, NAT Rules" }
+    ];
+
+    function renderSkillCards(filter) {
+      const container = document.getElementById('skills-grid');
+      container.innerHTML = '';
+
+      const filtered = filter === 'all' ? skillsList : skillsList.filter(s => s.category === filter);
+
+      filtered.forEach(skill => {
+        const card = document.createElement('div');
+        card.className = 'glass-panel p-4 rounded-xl border border-white/10 hover:border-azureCyan/40 transition-all group flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <i class="${skill.icon} text-azureCyan text-lg group-hover:scale-110 transition-transform"></i>
+              <span class="text-[10px] font-mono text-terminalEmerald font-semibold">${skill.level}% Confidence</span>
+            </div>
+            <h4 class="text-sm font-bold text-white group-hover:text-azureCyan transition-colors">${skill.name}</h4>
+            <p class="text-[11px] text-slate-400 mt-1 leading-normal font-sans">${skill.detail}</p>
+          </div>
+          <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-3">
+            <div class="bg-gradient-to-r from-azureBlue to-azureCyan h-full rounded-full" style="width: ${skill.level}%"></div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterSkills(category) {
+      playAudio('click');
+      document.querySelectorAll('.skill-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-category') === category) {
+          btn.className = 'skill-filter-btn px-4 py-1.5 rounded-full text-xs font-mono bg-azureCyan text-black font-bold transition-all';
+        } else {
+          btn.className = 'skill-filter-btn px-4 py-1.5 rounded-full text-xs font-mono bg-white/5 hover:bg-white/10 text-slate-300 transition-all';
+        }
+      });
+      renderSkillCards(category);
+    }
+
+    const cliInput = document.getElementById('cli-input');
+    const cliOutput = document.getElementById('cli-output');
+
+    const cliCommands = {
+      help: `Available Commands:
+  - whoami          : Engineer summary and professional bio
+  - certs           : Microsoft & Harvard certifications
+  - skills          : Primary technical and cloud capabilities
+  - terraform plan  : Execute virtual HCL dry-run
+  - incident        : View Blackbaud production support highlights
+  - contact         : Direct email, phone, and LinkedIn
+  - clear           : Clear console buffer`,
+      whoami: `Yerra Paul Raj | Azure DevOps Engineer
+------------------------------------------------------------
+- Certification: Microsoft Certified: Azure Administrator Associate (AZ-104)
+- Experience   : 2.5+ Years high-stakes Production Support (Blackbaud & Teleperformance)
+- Project      : Automated 3-Tier Azure Infrastructure using Modular Terraform
+- Location     : Hyderabad, Telangana, India`,
+      certs: `Certifications & Credentials:
+------------------------------------------------------------
+1. Microsoft Certified: Azure Administrator Associate (AZ-104)
+2. CS50 - Introduction to Computer Science (Harvard University)
+3. Cloud Fundamentals (AWS/Azure Core Architecture)
+4. Microsoft Copilot for Productivity & Automated Workflows`,
+      skills: `{
+  "IaC": ["Terraform", "YAML Pipelines", "Git"],
+  "Azure": ["VNet", "NSGs", "Application Gateway", "Load Balancer", "Key Vault", "Bastion"],
+  "Scripting": ["PowerShell", "Bash", "Linux System Administration"],
+  "Troubleshooting": [".HAR Analysis", "DNS Resolution", "API & HTTP Inspection", "RCA"]
+}`,
+      "terraform plan": `[Terraform Cloud Core v1.6.4]
+Refreshing state... azurerm_virtual_network.vnet-prod
+Plan: 3 to add, 1 to change, 0 to destroy.
+Changes:
+  + azurerm_subnet.bastion (10.0.2.0/26)
+  + azurerm_application_gateway.network (WAF_v2)
+  ~ azurerm_network_security_group.nsg_web (rule 100 updated)
+Zero downtime expected.`,
+      incident: `Blackbaud Production Highlights:
+- Handled API, DNS, and integration outages for enterprise client websites.
+- Analyzed .HAR capture files and web server logs to diagnose 5xx errors and latency spikes.
+- Leveraged AI tools to enhance incident turnaround times.`,
+      contact: `Direct Communication Lines:
+- Email   : paulrajyerra@gmail.com
+- Phone   : +91-8885351138
+- LinkedIn: https://linkedin.com/in/paulrajyerra
+- Base    : Hyderabad, Telangana`
+    };
+
+    cliInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const rawCmd = cliInput.value.trim();
+        const cmd = rawCmd.toLowerCase();
+        cliInput.value = '';
+
+        // Print entered command
+        const cmdRow = document.createElement('div');
+        cmdRow.className = 'text-white font-mono flex items-center gap-1.5';
+        cmdRow.innerHTML = `<span class="text-terminalEmerald">paulraj@azure-devops:~$</span> <span>${rawCmd}</span>`;
+        cliOutput.appendChild(cmdRow);
+
+        if (cmd === 'clear') {
+          cliOutput.innerHTML = '';
+          return;
+        }
+
+        const outRow = document.createElement('pre');
+        outRow.className = 'text-slate-300 font-mono text-[11px] whitespace-pre-wrap';
+
+        if (cliCommands[cmd]) {
+          outRow.textContent = cliCommands[cmd];
+          playAudio('telemetry');
+        } else if (cmd === '') {
+          // Do nothing on blank enter
+        } else {
+          outRow.textContent = `zsh: command not found: ${rawCmd}. Type "help" for a list of cloud commands.`;
+          playAudio('error');
+        }
+
+        cliOutput.appendChild(outRow);
+        cliOutput.scrollTop = cliOutput.scrollHeight;
+      }
+    });
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('recruiter-name').value;
+      const subject = document.getElementById('recruiter-subject').value;
+      const message = document.getElementById('recruiter-message').value;
+
+      playAudio('deploy');
+
+      // Compose mailto link fallback so email client opens prefilled
+      const mailtoUrl = `mailto:paulrajyerra@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent("Sender: " + name + "\n\n" + message)}`;
+      
+      const feedback = document.getElementById('form-feedback');
+      feedback.textContent = `Thank you, ${name}! Your email client is launching with your dispatch.`;
+      feedback.classList.remove('hidden');
+
+      setTimeout(() => {
+        window.location.href = mailtoUrl;
+      }, 600);
+
+      showToast('Dispatch prepared for Paul Raj!');
+    }
+  </script>
+</body>
+</html>
