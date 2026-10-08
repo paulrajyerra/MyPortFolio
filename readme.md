@@ -5,7 +5,7 @@
 [![Azure DevOps](https://img.shields.io/badge/CI%2FCD-Azure%20Pipelines-0078D4?style=for-the-badge&logo=azuredevops&logoColor=white)](https://azure.microsoft.com/en-us/products/devops/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-> **Live Portfolio:** [https://paulrajyerra.github.io](https://paulrajyerra.github.io) *(Replace with your live URL)*  
+> **Live Portfolio:** [https://paulrajyerra.github.io/MyPortFolio/)  
 > **Contact:** [paulrajyerra@gmail.com](mailto:paulrajyerra@gmail.com) | [+91-8885351138](tel:+918885351138) | [LinkedIn Profile](https://linkedin.com/in/paulrajyerra)
 
 ---
