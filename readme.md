@@ -12,7 +12,7 @@
 
 ## 📌 Executive Summary
 
-High-performance, single-page cyber command-center portfolio built for **Yerra Paul Raj**, an **AZ-104 certified aspiring Azure DevOps Engineer** with **2.5+ years of frontline technical support and systems troubleshooting** experience (Blackbaud & Teleperformance).
+High-performance, single-page cyber command-center portfolio built for **Yerra Paul Raj**, an **AZ-104 certified aspiring Azure DevOps Engineer** with **4.5+ years of frontline technical support and systems troubleshooting** experience (Blackbaud & Teleperformance).
 
 This repository contains the complete interactive portfolio application featuring live cloud architecture visualizers, continuous integration simulation engines, and incident post-mortem debuggers.
 
